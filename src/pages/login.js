@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useCallback, useContext, useEffect, useReducer } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useReducer } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import * as ROUTES from '../constants/routes';
 
@@ -21,14 +21,17 @@ const reducer = (state, action) => {
   switch (action.type) {
     case ACTION_TYPE.SET_EMAIL:
       return {
+        ...state,
         email: action.payload
       };
     case ACTION_TYPE.SET_PASSWORD:
       return {
+        ...state,
         password: action.payload
       };
     case ACTION_TYPE.SET_ERROR:
       return {
+        ...state,
         error: action.payload
       };
     default:
@@ -37,13 +40,13 @@ const reducer = (state, action) => {
 };
 
 const Login = () => {
-  const [state, dispatch] = useReducer(initialState, reducer);
+  const [state, dispatch] = useReducer(reducer, initialState);
   const { email, password, error } = state;
   const history = useHistory();
 
-  const { firebase, FieldValue } = useContext(FirebaseContext);
+  const { firebase } = useContext(FirebaseContext);
 
-  const isInvalid = password === '' || email === '';
+  const isInvalid = useMemo(() => password === '' || email === '', [password, email]);
 
   const onEmailChange = useCallback(({ target }) => {
     dispatch({ type: ACTION_TYPE.SET_EMAIL, payload: target.value });
@@ -56,15 +59,21 @@ const Login = () => {
     document.title = 'Login - Instagram';
   }, []);
 
-  const handleLogin = useCallback(async (event) => {
-    event.preventDefault();
+  const handleLogin = useCallback(
+    async (event) => {
+      event.preventDefault();
 
-    // try{
-
-    // }catch (error) {
-
-    // }
-  }, []);
+      try {
+        await firebase.auth().signInWithEmailAndPassword(email, password);
+        history.push(ROUTES.DASHBOARD);
+      } catch (error) {
+        dispatch({ type: ACTION_TYPE.SET_EMAIL, payload: '' });
+        dispatch({ type: ACTION_TYPE.SET_PASSWORD, payload: '' });
+        dispatch({ type: ACTION_TYPE.SET_ERROR, payload: error.message });
+      }
+    },
+    [firebase, email, password]
+  );
 
   return (
     <div className="container flex items-center h-screen max-w-screen-md mx-auto select-none">
@@ -80,7 +89,7 @@ const Login = () => {
           <form className="w-full" onSubmit={handleLogin} method="POST">
             <input
               type="text"
-              aria-label="Enter your password"
+              aria-label="Enter your email"
               placeholder="Email address"
               className="w-full h-2 px-4 py-5 mb-2 mr-3 text-sm border rounded text-gray-base border-gray-primary"
               onChange={onEmailChange}
