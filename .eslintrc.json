@@ -31,10 +31,8 @@
         "destructuring": "all"
       }
     ],
-    // "arrow-body-style": [
-    //   2,
-    //   "as-needed"
-    // ],
+    "global-require": 0,
+    "arrow-body-style": [2, "as-needed"],
     "no-unused-expressions": [
       2,
       {
