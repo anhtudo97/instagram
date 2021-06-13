@@ -62,7 +62,6 @@ const Login = () => {
   const handleLogin = useCallback(
     async (event) => {
       event.preventDefault();
-      console.log(state);
       try {
         await firebase.auth().signInWithEmailAndPassword(email, password);
         history.push(ROUTES.DASHBOARD);

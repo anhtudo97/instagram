@@ -24,7 +24,6 @@ const ACTION_TYPE = {
 const reducer = (state, { type, payload }) => {
   switch (type) {
     case ACTION_TYPE.SET_EMAIL:
-      console.log(payload);
       return {
         ...state,
         email: payload
@@ -71,13 +70,11 @@ const Signup = () => {
       });
 
       const usernameIsExists = await doesUsernameExist(username);
-      console.log(state, ACTION_TYPE.SET_ERROR);
       if (!usernameIsExists) {
         try {
           const createdUserResult = await firebase
             .auth()
             .createUserWithEmailAndPassword(email.trim(), password);
-          console.log({ createdUserResult });
           // authentication
           // -> emailAddress & password & username (displayName)
           await createdUserResult.user.updateProfile({
@@ -100,7 +97,6 @@ const Signup = () => {
 
           history.push(ROUTES.DASHBOARD);
         } catch (error) {
-          console.log({ error });
           dispatch({ type: ACTION_TYPE.SET_EMAIL, payload: '' });
           dispatch({ type: ACTION_TYPE.SET_FULLNAME, payload: '' });
           dispatch({ type: ACTION_TYPE.SET_PASSWORD, payload: '' });
@@ -122,7 +118,6 @@ const Signup = () => {
   }, []);
 
   const onUsernameChange = useCallback(({ target }) => {
-    console.log(target.value);
     dispatch({ type: ACTION_TYPE.SET_USERNAME, payload: target.value });
   }, []);
 
