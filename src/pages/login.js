@@ -17,22 +17,22 @@ const ACTION_TYPE = {
   SET_ERROR: 'SET_ERROR'
 };
 
-const reducer = (state, action) => {
-  switch (action.type) {
+const reducer = (state, { type, payload }) => {
+  switch (type) {
     case ACTION_TYPE.SET_EMAIL:
       return {
         ...state,
-        email: action.payload
+        email: payload
       };
     case ACTION_TYPE.SET_PASSWORD:
       return {
         ...state,
-        password: action.payload
+        password: payload
       };
     case ACTION_TYPE.SET_ERROR:
       return {
         ...state,
-        error: action.payload
+        error: payload
       };
     default:
       return state;
@@ -62,7 +62,7 @@ const Login = () => {
   const handleLogin = useCallback(
     async (event) => {
       event.preventDefault();
-
+      console.log(state);
       try {
         await firebase.auth().signInWithEmailAndPassword(email, password);
         history.push(ROUTES.DASHBOARD);

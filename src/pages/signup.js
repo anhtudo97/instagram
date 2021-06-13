@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useReducer } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import clsx from 'clsx';
 import FirebaseContext from '../context/firebase';
 import * as ROUTES from '../constants/routes';
 import { doesUsernameExist } from '../services/firebase';
@@ -15,37 +16,38 @@ const initialState = {
 const ACTION_TYPE = {
   SET_EMAIL: 'SET_EMAIL',
   SET_PASSWORD: 'SET_PASSWORD',
-  SET_USERNAMES: 'SET_USERNAMES',
+  SET_USERNAME: 'SET_USERNAME',
   SET_FULLNAME: 'SET_FULLNAME',
   SET_ERROR: 'SET_ERROR'
 };
 
-const reducer = (state, action) => {
-  switch (action.type) {
+const reducer = (state, { type, payload }) => {
+  switch (type) {
     case ACTION_TYPE.SET_EMAIL:
+      console.log(payload);
       return {
         ...state,
-        email: action.payload
+        email: payload
       };
     case ACTION_TYPE.SET_PASSWORD:
       return {
         ...state,
-        password: action.payload
+        password: payload
       };
-    case ACTION_TYPE.USERNAME:
+    case ACTION_TYPE.SET_USERNAME:
       return {
         ...state,
-        username: action.payload
+        username: payload
       };
     case ACTION_TYPE.SET_FULLNAME:
       return {
         ...state,
-        fullname: action.payload
+        fullname: payload
       };
     case ACTION_TYPE.SET_ERROR:
       return {
         ...state,
-        error: action.payload
+        error: payload
       };
     default:
       return state;
@@ -60,59 +62,68 @@ const Signup = () => {
 
   const isInvalid = useMemo(() => password === '' || email === '', [password, email]);
 
-  const handleSignUp = useCallback(async (event) => {
-    event.preventDefault();
-
-    const usernameIsExists = await doesUsernameExist(username);
-
-    if (!usernameIsExists) {
-      try {
-        const createdUserResult = await firebase
-          .auth()
-          .createUserWithEmailAndPassword(email, password);
-
-        // authentication
-        // -> emailAddress & password & username (displayName)
-        await createdUserResult.user.updateProfile({
-          displayName: username
-        });
-
-        // firebase user collection (create a document)
-        await firebase
-          .firestore()
-          .collection('users')
-          .add({
-            userId: createdUserResult.user.uid,
-            username: username.toLowerCase(),
-            fullName: fullname,
-            emailAddress: email.toLowerCase(),
-            following: ['2'],
-            followers: [],
-            dateCreated: Date.now()
-          });
-
-        history.push(ROUTES.DASHBOARD);
-      } catch (error) {
-        dispatch({ type: ACTION_TYPE.SET_EMAIL, payload: '' });
-        dispatch({ type: ACTION_TYPE.SET_FULLNAME, payload: '' });
-        dispatch({ type: ACTION_TYPE.SET_PASSWORD, payload: '' });
-        dispatch({ type: ACTION_TYPE.SET_ERROR, payload: error.message });
-      }
-    } else {
-      dispatch({ type: ACTION_TYPE.USERNAME, payload: '' });
+  const handleSignUp = useCallback(
+    async (event) => {
+      event.preventDefault();
       dispatch({
         type: ACTION_TYPE.SET_ERROR,
-        payload: 'That username is already taken, please try another.'
+        payload: ''
       });
-    }
-  }, []);
+
+      const usernameIsExists = await doesUsernameExist(username);
+      console.log(state, ACTION_TYPE.SET_ERROR);
+      if (!usernameIsExists) {
+        try {
+          const createdUserResult = await firebase
+            .auth()
+            .createUserWithEmailAndPassword(email.trim(), password);
+          console.log({ createdUserResult });
+          // authentication
+          // -> emailAddress & password & username (displayName)
+          await createdUserResult.user.updateProfile({
+            displayName: username
+          });
+
+          // firebase user collection (create a document)
+          await firebase
+            .firestore()
+            .collection('users')
+            .add({
+              userId: createdUserResult.user.uid,
+              username: username.toLowerCase(),
+              fullName: fullname,
+              emailAddress: email.toLowerCase(),
+              following: ['2'],
+              followers: [],
+              dateCreated: Date.now()
+            });
+
+          history.push(ROUTES.DASHBOARD);
+        } catch (error) {
+          console.log({ error });
+          dispatch({ type: ACTION_TYPE.SET_EMAIL, payload: '' });
+          dispatch({ type: ACTION_TYPE.SET_FULLNAME, payload: '' });
+          dispatch({ type: ACTION_TYPE.SET_PASSWORD, payload: '' });
+          dispatch({ type: ACTION_TYPE.SET_ERROR, payload: error.message });
+        }
+      } else {
+        dispatch({ type: ACTION_TYPE.USERNAME, payload: '' });
+        dispatch({
+          type: ACTION_TYPE.SET_ERROR,
+          payload: 'That username is already taken, please try another.'
+        });
+      }
+    },
+    [firebase, email, password, fullname, username]
+  );
 
   useEffect(() => {
     document.title = 'Sign Up - Instagram';
   }, []);
 
   const onUsernameChange = useCallback(({ target }) => {
-    dispatch({ type: ACTION_TYPE.SET_USERNAMES, payload: target.value });
+    console.log(target.value);
+    dispatch({ type: ACTION_TYPE.SET_USERNAME, payload: target.value });
   }, []);
 
   const onFullnameChange = useCallback(({ target }) => {
@@ -176,8 +187,10 @@ const Signup = () => {
             <button
               disabled={isInvalid}
               type="submit"
-              className={`bg-blue-medium text-white w-full rounded h-8 font-bold
-          ${isInvalid && 'opacity-50'}`}
+              className={clsx(
+                'bg-blue-medium text-white w-full rounded h-8 font-bold',
+                isInvalid && 'opacity-50'
+              )}
             >
               Sign Up
             </button>
