@@ -22,9 +22,9 @@
   },
   "rules": {
     "import/no-extraneous-dependencies": [
-      "error",
+      "off",
       {
-        "devDependencies": true,
+        "devDependencies": false,
         "optionalDependencies": false,
         "peerDependencies": false
       }
@@ -41,7 +41,7 @@
       }
     ],
     "global-require": 0,
-    "arrow-body-style": [2, "as-needed"],
+    "arrow-body-style": "off",
     "no-unused-expressions": [
       2,
       {

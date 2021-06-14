@@ -63,7 +63,8 @@
     "postcss": "^8.3.2",
     "postcss-cli": "^8.3.1",
     "prettier": "^2.3.1",
-    "props-type": "^1.0.1",
+    "prop-types": "^15.7.2",
+    "react-loader-spinner": "^4.0.0",
     "react-loading-skeleton": "^2.2.0"
   }
 }
