@@ -89,3 +89,5 @@ Actions.propTypes = {
   likedPhoto: PropTypes.bool.isRequired,
   handleFocus: PropTypes.func.isRequired
 };
+
+export default Actions;
