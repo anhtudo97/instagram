@@ -48,3 +48,5 @@ Suggestions.propTypes = {
   following: PropTypes.array,
   loggedInUserDocId: PropTypes.string
 };
+
+export default Suggestions;

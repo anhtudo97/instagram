@@ -55,3 +55,5 @@ SuggestedProfile.propTypes = {
   userId: PropTypes.string.isRequired,
   loggedInUserDocId: PropTypes.string.isRequired
 };
+
+export default SuggestedProfile;

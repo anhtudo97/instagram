@@ -7,9 +7,11 @@ export const ProtectedRoute = ({ user, children, ...rest }) => (
   <Route
     {...rest}
     render={({ location }) => {
-      if (user) React.cloneElement(children, { user });
+      if (user) {
+        return React.cloneElement(children, { user });
+      }
 
-      if (!user)
+      if (!user) {
         return (
           <Redirect
             to={{
@@ -18,7 +20,9 @@ export const ProtectedRoute = ({ user, children, ...rest }) => (
             }}
           />
         );
-      return <></>;
+      }
+
+      return null;
     }}
   />
 );
