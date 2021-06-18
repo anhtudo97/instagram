@@ -13,7 +13,7 @@ const NotFound = lazy(() => import('./pages/not-found'));
 const Profile = lazy(() => import('./pages/profile'));
 const Dashboard = lazy(() => import('./pages/dashboard'));
 
-function App() {
+const App = () => {
   const { user } = useAuthListener();
 
   return (
@@ -27,13 +27,12 @@ function App() {
             <ProtectedRoute user={user} path={ROUTES.DASHBOARD} exact>
               <Dashboard />
             </ProtectedRoute>
-            <Route path={ROUTES.NOT_FOUND} component={NotFound} />
             <Route component={NotFound} />
           </Switch>
         </Suspense>
       </Router>
     </UserContext.Provider>
   );
-}
+};
 
 export default App;

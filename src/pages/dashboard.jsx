@@ -6,7 +6,7 @@ import Sidebar from '../components/Sidebar';
 import { useUser } from '../hooks/use-user';
 import LoggedInUserContext from '../context/logged-in-user';
 
-export default function Dashboard({ user: loggedInUser }) {
+const Dashboard = ({ user: loggedInUser }) => {
   const { user, setActiveUser } = useUser(loggedInUser.uid);
   useEffect(() => {
     document.title = 'Instagram';
@@ -23,8 +23,10 @@ export default function Dashboard({ user: loggedInUser }) {
       </div>
     </LoggedInUserContext.Provider>
   );
-}
+};
 
 Dashboard.propTypes = {
   user: PropTypes.object.isRequired
 };
+
+export default Dashboard;

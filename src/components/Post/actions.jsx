@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import FirebaseContext from '../../context/firebase';
 import UserContext from '../../context/user';
@@ -12,7 +12,7 @@ const Actions = ({ docId, totalLikes, likedPhoto, handleFocus }) => {
   const [likes, setLikes] = useState(totalLikes);
   const { firebase, FieldValue } = useContext(FirebaseContext);
 
-  const handleToggleLiked = async () => {
+  const handleToggleLiked = useCallback(async () => {
     setToggleLiked((toggleLiked) => !toggleLiked);
 
     await firebase
@@ -24,7 +24,7 @@ const Actions = ({ docId, totalLikes, likedPhoto, handleFocus }) => {
       });
 
     setLikes((likes) => (toggleLiked ? likes - 1 : likes + 1));
-  };
+  }, [toggleLiked, likes]);
 
   return (
     <>
